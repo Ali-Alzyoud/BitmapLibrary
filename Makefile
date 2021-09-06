@@ -1,15 +1,20 @@
-CXX = g++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address
-LDFLAGS =  -fsanitize=address
+CC := g++
+CFLAGS := -Wall -g
+TARGET := app
 
-SRC = 
-OBJ = $(SRC:.cc=.o)
-EXEC = app
 
-all: $(EXEC)
+SRC_DIR := .
+OBJ_DIR := obj
 
-$(EXEC): $(OBJ)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LBLIBS)
+# $(wildcard *.cpp /xxx/xxx/*.cpp): get all .cpp files from the current directory and dir "/xxx/xxx/"
+SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+# $(patsubst %.cpp,%.o,$(SRCS)): substitute all ".cpp" file name strings to ".o" file name strings
+OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
+all: $(TARGET)
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $<
 clean:
-	rm -rf $(OBJ) $(EXEC)
+	rm -rf $(TARGET) *.o

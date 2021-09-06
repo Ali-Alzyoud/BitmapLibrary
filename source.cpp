@@ -1,4 +1,4 @@
-#include "BitmapLibrary/Bitmap.h"
+#include "Bitmap.h"
 int main(){
 
 }
