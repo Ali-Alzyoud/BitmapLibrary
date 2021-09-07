@@ -1,9 +1,12 @@
 #include <cstdlib>
 #include <cstdio>
 #include <string.h>
+#include <fstream>
+#include <iostream>
 #include "Bitmap.h"
 
 #define DATA this->_data
+#define DATASIZE this->_dataSize
 
 unsigned int colorSpaceSize(COLOR_SPACE colorspace)
 {
@@ -18,9 +21,12 @@ unsigned int colorSpaceSize(COLOR_SPACE colorspace)
 
 Bitmap::Bitmap(unsigned int width, unsigned int height, COLOR_SPACE colorspace)
 {
-    unsigned dataSize = width * height * colorSpaceSize(colorspace);
-    DATA = (unsigned char *)malloc(dataSize);
-    memset(DATA, 0, dataSize);
+    DATASIZE = width * height * colorSpaceSize(colorspace);
+    this->_width = width;
+    this->_height = height;
+    this->_colorspace = colorspace;
+    DATA = (unsigned char *)malloc(DATASIZE);
+    memset(DATA, 0xff, DATASIZE);
 }
 
 Pixel Bitmap::getPixel(UINT x, UINT y) const
@@ -39,4 +45,14 @@ UINT Bitmap::getWidth() const
 UINT Bitmap::getHeight() const
 {
     return this->_height;
+}
+void Bitmap::save(char *path){
+    std::ofstream file(path);
+    file<<"P6"<<std::endl;
+    file<<this->_width<<" "<<this->_height<<std::endl;
+    if(this->_colorspace == COLOR_SPACE::COLOR_SPACE_RGB24){
+        file<<255<<std::endl;
+    }
+    file.write((const char*) DATA, DATASIZE);
+    file.close();
 }

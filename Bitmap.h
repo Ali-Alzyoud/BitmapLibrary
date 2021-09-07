@@ -24,10 +24,13 @@ public:
     void setRow(UINT row, BYTE *data, UINT size);
     UINT getWidth() const;
     UINT getHeight() const;
+    void save(char *path);
 
 private:
     UINT _width;
     UINT _height;
-    unsigned char *_data;
+    COLOR_SPACE _colorspace;
+    BYTE *_data;
+    UINT _dataSize;
 };
 #endif//#ifndef BITMAP_H

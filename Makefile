@@ -17,4 +17,4 @@ $(TARGET): $(OBJS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $<
 clean:
-	rm -rf $(TARGET) *.o
+	rm -rf $(TARGET) *.o *.ppm
