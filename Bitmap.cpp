@@ -19,6 +19,12 @@ unsigned int colorSpaceSize(COLOR_SPACE colorspace)
     }
 }
 
+const Pixel Pixel::RED = Pixel(0xff, 0, 0);
+const Pixel Pixel::GREEN = Pixel(0, 0xff, 0);
+const Pixel Pixel::BLUE = Pixel(0, 0, 0xff);
+const Pixel Pixel::BLACK = Pixel(0, 0, 0);
+const Pixel Pixel::WHITE = Pixel(0xff, 0xff, 0xff);
+
 Bitmap::Bitmap(unsigned int width, unsigned int height, COLOR_SPACE colorspace)
 {
     DATASIZE = width * height * colorSpaceSize(colorspace);
@@ -61,9 +67,9 @@ void Bitmap::FillRect(UINT x, UINT y, UINT width, UINT height, Pixel color)
 {
     //ali.m outbounds check
     int index = 0;
-    for (int h = y; h < (y + height); h++)
+    for (UINT h = y; h < (y + height); h++)
     {
-        for (int w = x; w < (x + width); w++)
+        for (UINT w = x; w < (x + width); w++)
         {
             //ali.m replace with filling rows
             index = h*this->_width * 3 + w * 3;

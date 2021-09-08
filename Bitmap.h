@@ -22,6 +22,11 @@ struct Pixel{
         g = 0;
         b = 0;
     }
+    static const Pixel RED;
+    static const Pixel GREEN;
+    static const Pixel BLUE;
+    static const Pixel BLACK;
+    static const Pixel WHITE;
 };
 
 
