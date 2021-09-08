@@ -31,7 +31,7 @@ Bitmap::Bitmap(unsigned int width, unsigned int height, COLOR_SPACE colorspace)
 
 Pixel Bitmap::getPixel(UINT x, UINT y) const
 {
-    Pixel pixel={0};
+    Pixel pixel;
     if (x >= this->_width || y >= this->_height) return pixel;
 
     //ali.m needs to add implementation;
@@ -55,4 +55,21 @@ void Bitmap::save(char *path){
     }
     file.write((const char*) DATA, DATASIZE);
     file.close();
+}
+
+void Bitmap::FillRect(UINT x, UINT y, UINT width, UINT height, Pixel color)
+{
+    //ali.m outbounds check
+    int index = 0;
+    for (int h = y; h < (y + height); h++)
+    {
+        for (int w = x; w < (x + width); w++)
+        {
+            //ali.m replace with filling rows
+            index = h*this->_width * 3 + w * 3;
+            DATA[index] = color.r;
+            DATA[index+1] = color.g;
+            DATA[index+2] = color.b;
+        }
+    }
 }

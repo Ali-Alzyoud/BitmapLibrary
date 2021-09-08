@@ -10,6 +10,18 @@ typedef unsigned char BYTE;
 
 struct Pixel{
     BYTE r,g,b;
+    Pixel(BYTE red, BYTE green, BYTE blue)
+    {
+        r = red;
+        g = green;
+        b = blue;
+    }
+    Pixel()
+    {
+        r = 0;
+        g = 0;
+        b = 0;
+    }
 };
 
 
@@ -19,12 +31,15 @@ class Bitmap
 public:
     Bitmap(UINT width, UINT height, COLOR_SPACE colorspace);
     Pixel getPixel(UINT x, UINT y) const;
-    void setPixel(Pixel);
+    //void setPixel(Pixel);
     const BYTE *getRow(UINT row, UINT size) const;
     void setRow(UINT row, BYTE *data, UINT size);
     UINT getWidth() const;
     UINT getHeight() const;
     void save(char *path);
+
+    //Render functions
+    void FillRect(UINT x, UINT y, UINT width, UINT height, Pixel color);
 
 private:
     UINT _width;

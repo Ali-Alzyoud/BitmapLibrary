@@ -1,5 +1,6 @@
 #pragma once
-enum RENDER_TYPE {
+enum RENDER_TYPE
+{
 	RENDER_TYPE_FILL,
 	RENDER_TYPE_STROKE,
 
@@ -11,4 +12,3 @@ public:
 	//DrawLine;
 	//DrawRectangle;
 };
-
