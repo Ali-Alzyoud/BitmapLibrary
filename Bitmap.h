@@ -35,8 +35,9 @@ class Bitmap
 {
 public:
     Bitmap(UINT width, UINT height, COLOR_SPACE colorspace);
+    Bitmap(char *path);
     Pixel getPixel(UINT x, UINT y) const;
-    //void setPixel(Pixel);
+    void setPixel(UINT x, UINT y, Pixel pixel);
     const BYTE *getRow(UINT row, UINT size) const;
     void setRow(UINT row, BYTE *data, UINT size);
     UINT getWidth() const;
