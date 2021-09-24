@@ -19,7 +19,7 @@ int main(){
 
     bmp->save((char *)"a.ppm", PPM_TYPE::PPM_TYPE_P6);
 
-    Bitmap *bmp2 = new Bitmap((char *)"sample_p6.ppm");
+    Bitmap *bmp2 = new Bitmap((char *)"samples/sample_p6.ppm");
     for(float a = 0 ; a < M_PI*2 ; a += 0.01){
         int X = xcenter + radius * cos(a);
         int Y = ycenter + radius * sin(a);
