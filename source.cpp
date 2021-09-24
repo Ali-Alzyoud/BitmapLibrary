@@ -19,12 +19,7 @@ int main(){
 
     bmp->save((char *)"a.ppm", PPM_TYPE::PPM_TYPE_P6);
 
+    // Try to Load and Save Image
     Bitmap *bmp2 = new Bitmap((char *)"samples/sample_p6.ppm");
-    for(float a = 0 ; a < M_PI*2 ; a += 0.01){
-        int X = xcenter + radius * cos(a);
-        int Y = ycenter + radius * sin(a);
-        bmp2->setPixel(X, Y, Pixel::BLUE);
-    }
-
-    bmp2->save((char *)"b.ppm", PPM_TYPE::PPM_TYPE_P3);
+    bmp2->save((char *)"sample_converted.ppm", PPM_TYPE::PPM_TYPE_P6);
 }

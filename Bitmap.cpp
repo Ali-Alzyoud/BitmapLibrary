@@ -59,6 +59,7 @@ Bitmap::Bitmap(char *path){
     }
 
     file>>width>>height>>pixel_size;
+    file.ignore();
 
     IMAGE_WIDTH = width;
     IMAGE_HEIGHT = height;
