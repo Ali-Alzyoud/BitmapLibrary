@@ -5,24 +5,12 @@
 #include <iostream>
 #include "Bitmap.h"
 
+#define PIXEL_SIZE 3
 #define DATA this->_data
 #define DATASIZE this->_dataSize
 #define IMAGE_WIDTH this->_width
 #define IMAGE_HEIGHT this->_height
-#define COLORSPACE this->_colorspace
-#define GET_DATA_INDEX(x,y) (y * IMAGE_WIDTH * 3 + x * 3);
-
-
-unsigned int colorSpaceSize(COLOR_SPACE colorspace)
-{
-    switch (colorspace)
-    {
-    case COLOR_SPACE_RGB24:
-        return 24;
-    default:
-        return 0;
-    }
-}
+#define GET_DATA_INDEX(x,y) (y * IMAGE_WIDTH * PIXEL_SIZE + x * PIXEL_SIZE);
 
 const Pixel Pixel::RED = Pixel(0xff, 0, 0);
 const Pixel Pixel::GREEN = Pixel(0, 0xff, 0);
@@ -30,12 +18,11 @@ const Pixel Pixel::BLUE = Pixel(0, 0, 0xff);
 const Pixel Pixel::BLACK = Pixel(0, 0, 0);
 const Pixel Pixel::WHITE = Pixel(0xff, 0xff, 0xff);
 
-Bitmap::Bitmap(unsigned int width, unsigned int height, COLOR_SPACE colorspace)
+Bitmap::Bitmap(unsigned int width, unsigned int height)
 {
-    DATASIZE = width * height * colorSpaceSize(colorspace);
+    DATASIZE = width * height * PIXEL_SIZE;
     IMAGE_WIDTH = width;
     IMAGE_HEIGHT = height;
-    this->_colorspace = colorspace;
     DATA = (unsigned char *)malloc(DATASIZE);
     memset(DATA, 0xff, DATASIZE);
 }
@@ -43,25 +30,54 @@ Bitmap::Bitmap(unsigned int width, unsigned int height, COLOR_SPACE colorspace)
 Bitmap::Bitmap(char *path){
     std::ifstream file(path);
 
-    //ali.m skip comments
     //read p3 p6
     std::string type;
+    std::string comment;
     UINT width;
     UINT height;
     UINT pixel_size;
+    PPM_TYPE ppmType = PPM_TYPE_NONE;
 
     file>>type;
-    file>>width>>height>>pixel_size;
-
-    if(pixel_size == 255){
-        COLORSPACE = COLOR_SPACE::COLOR_SPACE_RGB24;
+     if(type == "P3"|| type == "p3")
+    {
+        ppmType = PPM_TYPE_P3;
     }
+    else if(type == "P6" || type == "p6")
+    {
+        ppmType = PPM_TYPE_P6;
+    }
+
+    //Incase of not supported file
+    if(ppmType == PPM_TYPE_NONE){
+        return;
+    }
+
+    if(file.peek() == '#'){
+        //Skip comments
+        file>>comment;
+    }
+
+    file>>width>>height>>pixel_size;
 
     IMAGE_WIDTH = width;
     IMAGE_HEIGHT = height;
-    DATASIZE = width * height * colorSpaceSize(COLORSPACE);
+    DATASIZE = width * height * PIXEL_SIZE;
     DATA = (unsigned char *)malloc(DATASIZE);
-    file.read((char *)DATA, DATASIZE);
+    if(ppmType == PPM_TYPE_P6){
+        file.read((char *)DATA, DATASIZE);
+    }
+    else if (ppmType == PPM_TYPE_P3){
+        Pixel pixel;
+        for (UINT h = 0; h < IMAGE_HEIGHT; h++)
+        {
+            for (UINT w = 0; w < IMAGE_WIDTH; w++)
+            {
+                file>>pixel.r>>pixel.g>>pixel.b;
+                setPixel(w,h,pixel);
+            }
+        }
+    }
 
     file.close();
 }
@@ -98,14 +114,30 @@ UINT Bitmap::getHeight() const
     return this->_height;
 }
 
-void Bitmap::save(char *path){
+void Bitmap::save(char *path, PPM_TYPE type){
     std::ofstream file(path);
-    file<<"P6"<<std::endl;
-    file<<this->_width<<" "<<this->_height<<std::endl;
-    if(this->_colorspace == COLOR_SPACE::COLOR_SPACE_RGB24){
-        file<<255<<std::endl;
+    if(type == PPM_TYPE_P6){
+        file<<"P6"<<std::endl;
     }
-    file.write((const char*) DATA, DATASIZE);
+    else if(type == PPM_TYPE_P3){
+        file<<"P3"<<std::endl;
+    }
+    file<<this->_width<<" "<<this->_height<<std::endl;
+    file<<255<<std::endl;
+    if(type == PPM_TYPE_P6){
+       file.write((const char*) DATA, DATASIZE);
+    }
+    else if(type == PPM_TYPE_P3){
+       Pixel pixel;
+        for (UINT h = 0; h < IMAGE_HEIGHT; h++)
+        {
+            for (UINT w = 0; w < IMAGE_WIDTH; w++)
+            {
+                pixel = getPixel(w,h);
+                file<<(int)pixel.r<<" "<<(int)pixel.g<<" "<<(int)pixel.b<<std::endl;
+            }
+        }
+    }
     file.close();
 }
 

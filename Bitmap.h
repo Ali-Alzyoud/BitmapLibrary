@@ -1,9 +1,5 @@
 #ifndef BITMAP_H
 #define BITMAP_H
-enum COLOR_SPACE
-{
-    COLOR_SPACE_RGB24 = 0
-};
 
 typedef unsigned int UINT;
 typedef unsigned char BYTE;
@@ -29,12 +25,16 @@ struct Pixel{
     static const Pixel WHITE;
 };
 
-
+enum PPM_TYPE{
+    PPM_TYPE_NONE,
+    PPM_TYPE_P3,
+    PPM_TYPE_P6
+};
 
 class Bitmap
 {
 public:
-    Bitmap(UINT width, UINT height, COLOR_SPACE colorspace);
+    Bitmap(UINT width, UINT height);
     Bitmap(char *path);
     Pixel getPixel(UINT x, UINT y) const;
     void setPixel(UINT x, UINT y, Pixel pixel);
@@ -42,7 +42,7 @@ public:
     void setRow(UINT row, BYTE *data, UINT size);
     UINT getWidth() const;
     UINT getHeight() const;
-    void save(char *path);
+    void save(char *path, PPM_TYPE type);
 
     //Render functions
     void FillRect(UINT x, UINT y, UINT width, UINT height, Pixel color);
@@ -50,7 +50,6 @@ public:
 private:
     UINT _width;
     UINT _height;
-    COLOR_SPACE _colorspace;
     BYTE *_data;
     UINT _dataSize;
 };
