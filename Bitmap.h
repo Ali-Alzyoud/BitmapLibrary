@@ -4,8 +4,9 @@
 typedef unsigned int UINT;
 typedef unsigned char BYTE;
 
-struct Pixel{
-    BYTE r,g,b;
+struct Pixel
+{
+    BYTE r, g, b;
     Pixel(BYTE red, BYTE green, BYTE blue)
     {
         r = red;
@@ -25,7 +26,6 @@ struct Pixel{
     static const Pixel WHITE;
 };
 
-
 class BitmapBuffer
 {
 public:
@@ -42,28 +42,32 @@ private:
     UINT _dataSize;
 };
 
-class Renderer{
-    public:
-        Renderer(BitmapBuffer *); //ali.m pass by reference
-        void setFillColor(Pixel color);
-        void fillRect(UINT x, UINT y, UINT width, UINT height);
-        Pixel getPixel(UINT x, UINT y) const;
-        void setPixel(UINT x, UINT y, Pixel pixel);
+class Renderer
+{
+public:
+    Renderer(BitmapBuffer *); //ali.m pass by reference
+    void setFillColor(Pixel color);
+    void fillRect(UINT x, UINT y, UINT width, UINT height);
+    Pixel getPixel(UINT x, UINT y) const;
+    void setPixel(UINT x, UINT y, Pixel pixel);
 
-    private:
-        UINT getDataIndex(UINT x, UINT y) const;
-        BitmapBuffer *_buffer;
-        Pixel _fillColor;
+private:
+    UINT getDataIndex(UINT x, UINT y) const;
+    BitmapBuffer *_buffer;
+    Pixel _fillColor;
 };
 
-enum PPM_TYPE{
+enum PPM_TYPE
+{
     PPM_TYPE_NONE,
     PPM_TYPE_P3,
     PPM_TYPE_P6
 };
-class ImageFile {
-    static void save(BitmapBuffer bmp, char *path, PPM_TYPE type);
-    static BitmapBuffer load(char *path);
+class ImageFile
+{
+public:
+    static void save(BitmapBuffer *bmp, char *path, PPM_TYPE type);
+    static BitmapBuffer *load(char *path);
 };
 
-#endif//#ifndef BITMAP_H
+#endif //#ifndef BITMAP_H

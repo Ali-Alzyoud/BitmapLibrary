@@ -104,8 +104,7 @@ void Renderer::fillRect(UINT x, UINT y, UINT width, UINT height)
 
 
 //ImageFile
-
-void ImageFile::save(char *path, PPM_TYPE type){
+void ImageFile::save(BitmapBuffer *bmp, char *path, PPM_TYPE type){
     std::ofstream file(path);
     if(type == PPM_TYPE_P6){
         file<<"P6"<<std::endl;
@@ -113,18 +112,19 @@ void ImageFile::save(char *path, PPM_TYPE type){
     else if(type == PPM_TYPE_P3){
         file<<"P3"<<std::endl;
     }
-    file<<this->_width<<" "<<this->_height<<std::endl;
+    file<<bmp->getWidth()<<" "<<bmp->getHeight()<<std::endl;
     file<<255<<std::endl;
     if(type == PPM_TYPE_P6){
-       file.write((const char*) DATA, DATASIZE);
+       file.write((const char*) bmp->getBuffer(), bmp->getBufferSize());
     }
     else if(type == PPM_TYPE_P3){
+       Renderer renderer(bmp);
        Pixel pixel;
-        for (UINT h = 0; h < IMAGE_HEIGHT; h++)
+        for (UINT h = 0; h < bmp->getHeight(); h++)
         {
-            for (UINT w = 0; w < IMAGE_WIDTH; w++)
+            for (UINT w = 0; w < bmp->getWidth(); w++)
             {
-                pixel = getPixel(w,h);
+                pixel = renderer.getPixel(w,h);
                 file<<(int)pixel.r<<" "<<(int)pixel.g<<" "<<(int)pixel.b<<std::endl;
             }
         }
@@ -132,7 +132,7 @@ void ImageFile::save(char *path, PPM_TYPE type){
     file.close();
 }
 
-static BitmapBuffer ImageFile::load(char *path){
+BitmapBuffer* ImageFile::load(char *path){
     std::ifstream file(path);
 
     //read p3 p6
@@ -155,7 +155,7 @@ static BitmapBuffer ImageFile::load(char *path){
 
     //Incase of not supported file
     if(ppmType == PPM_TYPE_NONE){
-        return;
+        return NULL;
     }
 
     if(file.peek() == '#'){
@@ -166,24 +166,24 @@ static BitmapBuffer ImageFile::load(char *path){
     file>>width>>height>>pixel_size;
     file.ignore();
 
-    IMAGE_WIDTH = width;
-    IMAGE_HEIGHT = height;
-    DATASIZE = width * height * PIXEL_SIZE;
-    DATA = (unsigned char *)malloc(DATASIZE);
+    UINT datasize = width * height * PIXEL_SIZE;
+    BitmapBuffer *bmp = new BitmapBuffer(width, height);
+    Renderer renderer(bmp);
     if(ppmType == PPM_TYPE_P6){
-        file.read((char *)DATA, DATASIZE);
+        file.read((char *)bmp->getBuffer(), datasize);
     }
     else if (ppmType == PPM_TYPE_P3){
         Pixel pixel;
-        for (UINT h = 0; h < IMAGE_HEIGHT; h++)
+        for (UINT h = 0; h < height; h++)
         {
-            for (UINT w = 0; w < IMAGE_WIDTH; w++)
+            for (UINT w = 0; w < width; w++)
             {
                 file>>pixel.r>>pixel.g>>pixel.b;
-                setPixel(w,h,pixel);
+                renderer.setPixel(w,h,pixel);
             }
         }
     }
 
     file.close();
+    return bmp;
 }
