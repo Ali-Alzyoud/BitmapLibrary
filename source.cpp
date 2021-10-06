@@ -7,6 +7,7 @@ int main()
     Renderer render(bmp);
     render.setFillColor(Pixel::RED);
     render.fillRect(10, 10, 80, 80);
+    render.fillRect(180, 180, 80, 80);
 
     int xcenter = 100;
     int ycenter = 100;
@@ -27,5 +28,7 @@ int main()
 
     // Try to Load and Save Image
     BitmapBuffer *bmp2 = ImageFile::load((char *)"samples/sample_p6.ppm");
-    ImageFile::save(bmp2,(char *)"sample_converted.ppm", PPM_TYPE::PPM_TYPE_P6);
+    Renderer render2(bmp2);
+    render2.fillBitmap(bmp,100,100);
+    ImageFile::save(bmp2,(char *)"sample_converted.ppm", PPM_TYPE::PPM_TYPE_P3);
 }

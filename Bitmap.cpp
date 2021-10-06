@@ -84,13 +84,19 @@ void Renderer::setPixel(UINT x, UINT y, Pixel pixel){
 
 void Renderer::fillRect(UINT x, UINT y, UINT width, UINT height)
 {
-    //ali.m outbounds check
     int index = 0;
     BYTE *data = this->_buffer->getBuffer();
 
-    for (UINT h = y; h < (y + height); h++)
+    UINT xmin = x = std::min(x, this->_buffer->getWidth());
+    UINT xmax = x = std::min(x + width, this->_buffer->getWidth());
+
+    UINT ymin = x = std::min(y, this->_buffer->getHeight());
+    UINT ymax = x = std::min(y + height, this->_buffer->getHeight());
+
+
+    for (UINT h = ymin; h < ymax; h++)
     {
-        for (UINT w = x; w < (x + width); w++)
+        for (UINT w = xmin; w < xmax; w++)
         {
             //ali.m replace with filling rows
             index = this->getDataIndex(w,h);
@@ -101,19 +107,39 @@ void Renderer::fillRect(UINT x, UINT y, UINT width, UINT height)
     }
 }
 
+void Renderer::fillBitmap(BitmapBuffer *bmp, UINT x, UINT y){
+
+    UINT xmin = x = std::min(x, this->_buffer->getWidth());
+    UINT xmax = x = std::min(x + bmp->getWidth(), this->_buffer->getWidth());
+
+    UINT ymin = x = std::min(y, this->_buffer->getHeight());
+    UINT ymax = x = std::min(y + bmp->getHeight(), this->_buffer->getHeight());
+
+
+    Renderer renderer(bmp);
+    for (UINT h = ymin; h < ymax; h++)
+    {
+        for (UINT w = xmin; w < xmax; w++)
+        {
+            //ali.m replace with filling rows
+            this->setPixel(w, h, renderer.getPixel(w-xmin, h-ymin));
+        }
+    }
+}
+
 
 
 //ImageFile
 void ImageFile::save(BitmapBuffer *bmp, char *path, PPM_TYPE type){
-    std::ofstream file(path);
+    std::ofstream file(path,  std::ios_base::out | std::ios_base::binary);
     if(type == PPM_TYPE_P6){
-        file<<"P6"<<std::endl;
+        file<<"P6"<<'\n';
     }
     else if(type == PPM_TYPE_P3){
-        file<<"P3"<<std::endl;
+        file<<"P3"<<'\n';
     }
-    file<<bmp->getWidth()<<" "<<bmp->getHeight()<<std::endl;
-    file<<255<<std::endl;
+    file<<bmp->getWidth()<<" "<<bmp->getHeight()<<'\n';
+    file<<255<<'\n';
     if(type == PPM_TYPE_P6){
        file.write((const char*) bmp->getBuffer(), bmp->getBufferSize());
     }
@@ -125,7 +151,7 @@ void ImageFile::save(BitmapBuffer *bmp, char *path, PPM_TYPE type){
             for (UINT w = 0; w < bmp->getWidth(); w++)
             {
                 pixel = renderer.getPixel(w,h);
-                file<<(int)pixel.r<<" "<<(int)pixel.g<<" "<<(int)pixel.b<<std::endl;
+                file<<(int)pixel.r<<" "<<(int)pixel.g<<" "<<(int)pixel.b<<'\n';
             }
         }
     }

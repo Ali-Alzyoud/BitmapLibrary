@@ -48,6 +48,7 @@ public:
     Renderer(BitmapBuffer *); //ali.m pass by reference
     void setFillColor(Pixel color);
     void fillRect(UINT x, UINT y, UINT width, UINT height);
+    void fillBitmap(BitmapBuffer*, UINT x, UINT y);
     Pixel getPixel(UINT x, UINT y) const;
     void setPixel(UINT x, UINT y, Pixel pixel);
 
