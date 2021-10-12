@@ -26,6 +26,12 @@ struct Pixel
     static const Pixel WHITE;
 };
 
+enum BITMAP_RESIZE_OPTION {
+    RESIZE_OPTION_NEAREST_NEIGHBOR = 0,
+    // BILINEAR,
+    // BICUBIC, 
+};
+
 class BitmapBuffer
 {
 public:
@@ -33,7 +39,12 @@ public:
     UINT getWidth() const;
     UINT getHeight() const;
     BYTE *getBuffer();
+    BitmapBuffer* resize(UINT width, UINT height, BITMAP_RESIZE_OPTION option);
+    BitmapBuffer* clone();
     const UINT getBufferSize() const;
+    Pixel getPixel(UINT x, UINT y) const;
+    void setPixel(UINT x, UINT y, Pixel pixel);
+    UINT getDataIndex(UINT x, UINT y) const;
 
 private:
     UINT _width;
@@ -42,6 +53,17 @@ private:
     UINT _dataSize;
 };
 
+
+
+
+
+
+
+
+
+
+
+//Responsible for drawing/rendering
 class Renderer
 {
 public:
@@ -49,15 +71,28 @@ public:
     void setFillColor(Pixel color);
     void fillRect(UINT x, UINT y, UINT width, UINT height);
     void fillBitmap(BitmapBuffer*, UINT x, UINT y);
-    Pixel getPixel(UINT x, UINT y) const;
-    void setPixel(UINT x, UINT y, Pixel pixel);
 
 private:
-    UINT getDataIndex(UINT x, UINT y) const;
     BitmapBuffer *_buffer;
     Pixel _fillColor;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// HELPER CLASS
 enum PPM_TYPE
 {
     PPM_TYPE_NONE,

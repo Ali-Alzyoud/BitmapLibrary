@@ -16,12 +16,12 @@ int main()
     {
         int X = xcenter + radius * cos(a);
         int Y = ycenter + radius * sin(a);
-        render.setPixel(X, Y, Pixel::GREEN);
+        bmp->setPixel(X, Y, Pixel::GREEN);
     }
 
     for (float a = 0; a < 200; a += 0.01)
     {
-        render.setPixel(a, a, Pixel::BLACK);
+        bmp->setPixel(a, a, Pixel::BLACK);
     }
 
     ImageFile::save(bmp, (char *)"a.ppm", PPM_TYPE::PPM_TYPE_P6);
@@ -30,5 +30,10 @@ int main()
     BitmapBuffer *bmp2 = ImageFile::load((char *)"samples/sample_p6.ppm");
     Renderer render2(bmp2);
     render2.fillBitmap(bmp,100,100);
+    render2.fillBitmap(bmp->resize(50,50,BITMAP_RESIZE_OPTION::RESIZE_OPTION_NEAREST_NEIGHBOR),400,100);
     ImageFile::save(bmp2,(char *)"sample_converted.ppm", PPM_TYPE::PPM_TYPE_P3);
+
+
+    BitmapBuffer *bmpReize = ImageFile::load((char *)"samples/sample_p6.ppm")->resize(100,100, BITMAP_RESIZE_OPTION::RESIZE_OPTION_NEAREST_NEIGHBOR);
+    ImageFile::save(bmpReize,(char *)"sample_resize.ppm", PPM_TYPE::PPM_TYPE_P3);
 }
