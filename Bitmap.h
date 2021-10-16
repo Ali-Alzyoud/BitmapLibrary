@@ -69,12 +69,17 @@ class Renderer
 public:
     Renderer(BitmapBuffer *); //ali.m pass by reference
     void setFillColor(Pixel color);
+    Pixel getFillColor() const;
+    void setStrokeColor(Pixel color);
+    Pixel getStrokeColor() const;
     void fillRect(UINT x, UINT y, UINT width, UINT height);
     void fillBitmap(BitmapBuffer*, UINT x, UINT y);
+    void drawLine(UINT x1, UINT y1, UINT x2, UINT y2);
 
 private:
     BitmapBuffer *_buffer;
     Pixel _fillColor;
+    Pixel _strokeColor;
 };
 
 

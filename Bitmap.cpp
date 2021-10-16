@@ -106,6 +106,17 @@ void Renderer::setFillColor(Pixel color){
     this->_fillColor = color;
 }
 
+Pixel Renderer::getFillColor() const{
+    return this->_fillColor;
+}
+
+void Renderer::setStrokeColor(Pixel color){
+    this->_strokeColor = color;
+}
+
+Pixel Renderer::getStrokeColor() const{
+    return this->_strokeColor;
+}
 
 void Renderer::fillRect(UINT x, UINT y, UINT width, UINT height)
 {
@@ -150,7 +161,33 @@ void Renderer::fillBitmap(BitmapBuffer *bmp, UINT x, UINT y){
     }
 }
 
+void Renderer::drawLine(UINT x1, UINT y1, UINT x2, UINT y2)
+{
+    UINT dx, dy, x, y;
+    int p;
+    dx = x2 - x1;
+    dy = y2 - y1;
 
+    x = x1;
+    y = y1;
+
+    p = dy << 1 - dx;
+
+    while (x < x2)
+    {
+        this->_buffer->setPixel(x, y, this->_strokeColor);
+        if (p >= 0)
+        {
+            y = y + 1;
+            p = p + dy << 1 - dx << 1;
+        }
+        else
+        {
+            p = p + dy << 1;
+        }
+        x = x + 1;
+    }
+}
 
 //ImageFile
 void ImageFile::save(BitmapBuffer *bmp, char *path, PPM_TYPE type){

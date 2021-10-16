@@ -4,5 +4,8 @@
 
 * DrawLine
 * DrawDot
+* transform (rotate/scale/translate)
+    - Calculate Canvas Size, and create image
+    - Apply transform to canvas image
 
 * Make simple game by drawing frames (like X O).
