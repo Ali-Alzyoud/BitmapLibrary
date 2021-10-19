@@ -1,7 +1,8 @@
 #include "Bitmap.h"
 #include <cmath>
-int main()
-{
+
+
+void DrawImageInImage(){
     BitmapBuffer *background = ImageFile::load((char *)"samples/sample_p6.ppm");
 
     Renderer render(background);
@@ -15,6 +16,36 @@ int main()
     render.drawLine(0, 0, 200, 200);
 
     ImageFile::save(background, (char *)"a.ppm", PPM_TYPE::PPM_TYPE_P6);
+}
+
+void DrawLines(){
+    BitmapBuffer *background = new BitmapBuffer(500, 500);
+
+    Renderer render(background);
+    render.setLineWidth(5);
+    render.setStrokeColor(Pixel::GREEN);
+    render.drawLine(0, 0, 500, 500);
+    render.setStrokeColor(Pixel::RED);
+    render.drawLine(500, 0, 0, 500);
+    render.setStrokeColor(Pixel::BLUE);
+    render.drawLine(0, 0, 500, 0);
+    render.setLineWidth(10);
+    render.setStrokeColor(Pixel::BLACK);
+    render.drawLine(0, 0, 0, 500);
+
+
+    render.setLineWidth(2);
+    render.setStrokeColor(Pixel::GREEN);
+    render.drawCircle(100, 100, 20);
+
+    ImageFile::save(background, (char *)"a.ppm", PPM_TYPE::PPM_TYPE_P6);
+}
+
+
+int main()
+{
+    //DrawImageInImage();
+    DrawLines();
 
     // // Try to Load and Save Image
     // BitmapBuffer *bmp2 = ImageFile::load((char *)"samples/sample_p6.ppm");

@@ -43,7 +43,7 @@ public:
     BitmapBuffer* clone();
     const UINT getBufferSize() const;
     Pixel getPixel(UINT x, UINT y) const;
-    void setPixel(UINT x, UINT y, Pixel pixel);
+    void setPixel(UINT x, UINT y, Pixel pixel, UINT width = 1);
     UINT getDataIndex(UINT x, UINT y) const;
 
 private:
@@ -68,18 +68,30 @@ class Renderer
 {
 public:
     Renderer(BitmapBuffer *); //ali.m pass by reference
+
     void setFillColor(Pixel color);
     Pixel getFillColor() const;
+
     void setStrokeColor(Pixel color);
     Pixel getStrokeColor() const;
+
+    void setLineWidth(UINT);
+    UINT getLineWidth() const;
+
     void fillRect(UINT x, UINT y, UINT width, UINT height);
     void fillBitmap(BitmapBuffer*, UINT x, UINT y);
     void drawLine(UINT x1, UINT y1, UINT x2, UINT y2);
+    void drawCircle(UINT x, UINT y, UINT r);
 
 private:
     BitmapBuffer *_buffer;
     Pixel _fillColor;
     Pixel _strokeColor;
+    UINT _width;
+
+    //https://gist.github.com/bert/1085538
+    void plot8points (int cx, int cy, int x, int y);
+    void plot4points (int cx, int cy, int x, int y);
 };
 
 

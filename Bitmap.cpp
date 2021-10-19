@@ -85,14 +85,36 @@ Pixel BitmapBuffer::getPixel(UINT x, UINT y) const
     return pixel;
 }
 
-void BitmapBuffer::setPixel(UINT x, UINT y, Pixel pixel){
+void BitmapBuffer::setPixel(UINT x, UINT y, Pixel pixel, UINT width){
     if (x >= this->_width || y >= this->_height) return;
 
     UINT index = this->getDataIndex(x,y);
 
-    _data[index] = pixel.r;
-    _data[index+1] = pixel.g;
-    _data[index+2] = pixel.b;
+    if(width == 1){
+        _data[index] = pixel.r;
+        _data[index+1] = pixel.g;
+        _data[index+2] = pixel.b;
+    }
+    else{
+        int start = -(int)(width / 2);
+        int end = start + width;
+        for (int i = start; i < end; i++)
+        for (int j = start; j < end; j++)
+        {
+            if (
+                (x + i) >= 0 &&
+                (x + i) < this->_width &&
+                (y + j) >= 0 &&
+                (y + j) < this->_height
+               )
+            {
+                index = this->getDataIndex(x + i, y + j);
+                _data[index] = pixel.r;
+                _data[index + 1] = pixel.g;
+                _data[index + 2] = pixel.b;
+            }
+        }
+    }
 }
 
 
@@ -100,6 +122,17 @@ void BitmapBuffer::setPixel(UINT x, UINT y, Pixel pixel){
 
 Renderer::Renderer(BitmapBuffer* buffer){
     this->_buffer = buffer;
+    this->_width = 1;
+}
+
+void Renderer::setLineWidth(UINT width)
+{
+    this->_width = width;
+}
+
+UINT Renderer::getLineWidth() const
+{
+    return this->_width;
 }
 
 void Renderer::setFillColor(Pixel color){
@@ -161,33 +194,83 @@ void Renderer::fillBitmap(BitmapBuffer *bmp, UINT x, UINT y){
     }
 }
 
-void Renderer::drawLine(UINT x1, UINT y1, UINT x2, UINT y2)
+void Renderer::drawLine(UINT x0, UINT y0, UINT x1, UINT y1)
 {
-    UINT dx, dy, x, y;
-    int p;
-    dx = x2 - x1;
-    dy = y2 - y1;
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2; /* error value e_xy */
 
-    x = x1;
-    y = y1;
-
-    p = dy << 1 - dx;
-
-    while (x < x2)
-    {
-        this->_buffer->setPixel(x, y, this->_strokeColor);
-        if (p >= 0)
+    for (;;)
+    { /* loop */
+        this->_buffer->setPixel(x0, y0, this->_strokeColor, this->_width);
+        if (x0 == x1 && y0 == y1)
+            break;
+        e2 = 2 * err;
+        if (e2 >= dy)
         {
-            y = y + 1;
-            p = p + dy << 1 - dx << 1;
-        }
-        else
+            err += dy;
+            x0 += sx;
+        } /* e_xy+e_x > 0 */
+        if (e2 <= dx)
         {
-            p = p + dy << 1;
-        }
-        x = x + 1;
+            err += dx;
+            y0 += sy;
+        } /* e_xy+e_y < 0 */
     }
 }
+
+
+void Renderer::drawCircle(UINT cx, UINT cy, UINT radius)
+{
+  int error = -(int)radius;
+  int x = radius;
+  int y = 0;
+ 
+  // The following while loop may altered to 'while (x > y)' for a
+  // performance benefit, as long as a call to 'plot4points' follows
+  // the body of the loop. This allows for the elimination of the
+  // '(x != y') test in 'plot8points', providing a further benefit.
+  //
+  // For the sake of clarity, this is not shown here.
+  while (x >= y)
+  {
+    plot8points (cx, cy, x, y);
+    error += y;
+    ++y;
+    error += y;
+    // The following test may be implemented in assembly language in
+    // most machines by testing the carry flag after adding 'y' to
+    // the value of 'error' in the previous step, since 'error'
+    // nominally has a negative value.
+    if (error >= 0)
+    {
+      --x;
+      error -= x;
+      error -= x;
+    }
+  }
+}
+
+
+void
+Renderer::plot8points (int cx, int cy, int x, int y)
+{
+  plot4points (cx, cy, x, y);
+  if (x != y) plot4points (cx, cy, y, x);
+}
+ 
+// The '(x != 0 && y != 0)' test in the last line of this function
+// may be omitted for a performance benefit if the radius of the
+// circle is known to be non-zero.
+void
+Renderer::plot4points (int cx, int cy, int x, int y)
+{
+  this->_buffer->setPixel (cx + x, cy + y, this->_strokeColor);
+  if (x != 0) this->_buffer->setPixel (cx - x, cy + y, this->_strokeColor);
+  if (y != 0) this->_buffer->setPixel (cx + x, cy - y, this->_strokeColor);
+  if (x != 0 && y != 0) this->_buffer->setPixel (cx - x, cy - y, this->_strokeColor);
+}
+
 
 //ImageFile
 void ImageFile::save(BitmapBuffer *bmp, char *path, PPM_TYPE type){
